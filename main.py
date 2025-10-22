@@ -1,5 +1,6 @@
 import flet as ft
 from alert import AlertManager
+from automobile import Automobile
 from autonoleggio import Autonoleggio
 
 FILE_AUTO = "automobili.csv"
@@ -37,6 +38,9 @@ def main(page: ft.Page):
 
     # Tutti i TextField per le info necessarie per aggiungere una nuova automobile (marca, modello, anno, contatore posti)
     # TODO
+    input_marca = ft.TextField(label="Marca")
+    input_modello = ft.TextField(label="Modello")
+    input_anno = ft.TextField(label="Anno")
 
     # --- FUNZIONI APP ---
     def aggiorna_lista_auto():
@@ -59,6 +63,32 @@ def main(page: ft.Page):
 
     # Handlers per la gestione dei bottoni utili all'inserimento di una nuova auto
     # TODO
+    def add(e):
+        currentVal = int(output.value)
+
+        output.value = currentVal + 1
+        output.value = str(output.value)
+        output.update()
+
+    def remove(e):
+        currentVal = int(output.value)
+
+        output.value = currentVal - 1
+        output.value = str(output.value)
+        output.update()
+
+    btnMinus = ft.IconButton(icon = ft.Icons.REMOVE,
+                             icon_color = "red",
+                             icon_size = 10,
+                             on_click = remove)
+
+    posti_output = ft.TextField(width=100, value="0", border_color="grey", text_align=ft.TextAlign.CENTER)
+
+    btnPlus = ft.IconButton(icon = ft.Icons.ADD,
+                             icon_color = "green",
+                             icon_size = 10,
+                             on_click = add)
+
 
     # --- EVENTI ---
     toggle_cambia_tema = ft.Switch(label="Tema scuro", value=True, on_change=cambia_tema)
@@ -66,6 +96,27 @@ def main(page: ft.Page):
 
     # Bottoni per la gestione dell'inserimento di una nuova auto
     # TODO
+    def aggiungi_nuova_auto():
+        marca = input_marca.value
+        modello = input_modello.value
+        anno = input_anno.value
+        posti = posti_output.value
+
+
+
+
+        nuova_auto = Automobile(marca, modello, anno, posti)
+        autonoleggio.aggiungi_automobile(nuova_auto)
+
+
+        aggiorna_lista_auto()
+
+        page.update()
+
+
+    pulsante_aggiungi_automobile = ft.ElevatedButton("Aggiungi automobile", on_click=aggiungi_nuova_auto())
+
+
 
     # --- LAYOUT ---
     page.add(
@@ -84,6 +135,15 @@ def main(page: ft.Page):
 
         # Sezione 3
         # TODO
+        ft.Divider(),
+        ft.Text(value="Aggiungi Nuova Automobile.", size=20),
+        ft.Row(spacing=20,
+               controls=[input_marca, input_modello, input_anno, btnMinus, posti_output, btnPlus],
+               alignment=ft.MainAxisAlignment.CENTER),
+        ft.Row(spacing=20,
+               controls=[pulsante_aggiungi_automobile],
+               alignment=ft.MainAxisAlignment.CENTER),
+
 
         # Sezione 4
         ft.Divider(),
