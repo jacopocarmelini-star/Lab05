@@ -1,6 +1,5 @@
 import flet as ft
 from alert import AlertManager
-from automobile import Automobile
 from autonoleggio import Autonoleggio
 
 FILE_AUTO = "automobili.csv"
@@ -64,18 +63,18 @@ def main(page: ft.Page):
     # Handlers per la gestione dei bottoni utili all'inserimento di una nuova auto
     # TODO
     def add(e):
-        currentVal = int(output.value)
+        currentVal = int(posti_output.value)
 
-        output.value = currentVal + 1
-        output.value = str(output.value)
-        output.update()
+        posti_output.value = currentVal + 1
+        posti_output.value = str(posti_output.value)
+        posti_output.update()
 
     def remove(e):
-        currentVal = int(output.value)
+        currentVal = int(posti_output.value)
 
-        output.value = currentVal - 1
-        output.value = str(output.value)
-        output.update()
+        posti_output.value = currentVal - 1
+        posti_output.value = str(posti_output.value)
+        posti_output.update()
 
     btnMinus = ft.IconButton(icon = ft.Icons.REMOVE,
                              icon_color = "red",
@@ -96,27 +95,40 @@ def main(page: ft.Page):
 
     # Bottoni per la gestione dell'inserimento di una nuova auto
     # TODO
-    def aggiungi_nuova_auto():
+    def aggiungi_nuova_auto(e):
         marca = input_marca.value
         modello = input_modello.value
-        anno = input_anno.value
-        posti = posti_output.value
+        anno_str = input_anno.value
+        posti_str = posti_output.value
 
+        # controllo se campi sono completi
+        if not marca or not modello or not anno_str or not posti_str:
+            alert.show_alert("❌ Compila tutti i campi!")
+            return
 
+        # controllo che anno e posti siano valori numerici validi
+        if not (anno_str.isdigit() and posti_str.isdigit()):
+            alert.show_alert("❌ Inserisci valori numerici validi per anno e posti!")
+            return
+        anno = int(anno_str)
+        posti = int(posti_str)
+        if anno < 1900 or anno > 2025 or posti <= 0:
+            alert.show_alert("❌ Inserisci valori numerici validi per anno e posti!")
+            return
 
+        autonoleggio.aggiungi_automobile(marca, modello, anno, posti)
 
-        nuova_auto = Automobile(marca, modello, anno, posti)
-        autonoleggio.aggiungi_automobile(nuova_auto)
-
+        #svuoto campi
+        input_marca.value = ""
+        input_modello.value = ""
+        input_anno.value = ""
+        posti_output.value = "0"
 
         aggiorna_lista_auto()
-
+        alert.show_alert("✅ Automobile aggiunta!")
         page.update()
 
-
-    pulsante_aggiungi_automobile = ft.ElevatedButton("Aggiungi automobile", on_click=aggiungi_nuova_auto())
-
-
+    pulsante_aggiungi_automobile = ft.ElevatedButton("Aggiungi automobile", on_click=aggiungi_nuova_auto)
 
     # --- LAYOUT ---
     page.add(
